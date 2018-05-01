@@ -13,4 +13,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <TextView
+        android:id="@+id/bluetoothState"
+        android:visibility="invisible"
+        android:text="Sin Bluetooth Disponible"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </RelativeLayout>

@@ -42,59 +42,12 @@ public class HomeFragment extends Fragment {
     List<Devices> devices = new ArrayList<>();
     DevicesAdapter adapter;
 
-    private static final String TAG = "DevicesBluetooth";
     ListView listBluetooth;
-    public static String EXTRA_DEVICES_ADDRESS = "devices_address";
     private BluetoothAdapter bluetoothAdapter;
-    private ArrayAdapter<String> pairedDevicesArrayAd;
     SwipeRefreshLayout swipe;
     public HomeFragment() {
         // Required empty public constructor
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        checkState();
-    }
-    private static final int REQUEST_ENABLE_BT = 1;
-
-    private void checkState() {
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (bluetoothAdapter == null){
-            Toast.makeText(getContext(), "El dispositivo no soporta el Bluetooth", Toast.LENGTH_SHORT).show();
-        }else{
-            if (!bluetoothAdapter.isEnabled()){
-                Intent enablebt = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enablebt, REQUEST_ENABLE_BT);
-            }else{
-                Toast.makeText(getContext(), "Bluetooth Encendido", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode==REQUEST_ENABLE_BT){
-            Toast.makeText(getContext(), "Bluetooth Encendido", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private AdapterView.OnItemClickListener deviceClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String info = ((TextView) view).getText().toString();
-            String address = info.substring(info.length() - 17);
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            DashboardFragment df = new DashboardFragment();
-            Bundle deviceArgs = new Bundle();
-            deviceArgs.putString(EXTRA_DEVICES_ADDRESS, address);
-            df.setArguments(deviceArgs);
-            ft.replace(R.id.screen_area, df);
-            ft.commit();
-        }
-    };
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -118,10 +71,10 @@ public class HomeFragment extends Fragment {
             adapter = new DevicesAdapter(devices, getContext(), getFragmentManager());
             adapter.notifyDataSetChanged();
             recyclerView.setAdapter(adapter);
-
         }else{
             Log.d("No Devices: ", "Sin dispositivos");
         }
+        Log.d("Create:","entro al fragment");
     }
 
     @Override

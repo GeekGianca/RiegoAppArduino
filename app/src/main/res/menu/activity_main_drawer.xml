@@ -5,19 +5,19 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
+            android:id="@+id/nav_regados"
             android:icon="@drawable/ic_invert_colors_black"
             android:title="Regados" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/nav_fechas_riego"
             android:icon="@drawable/ic_date_range"
             android:title="Fechas de riego" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/nav_dispositivos"
             android:icon="@drawable/ic_bluetooth"
             android:title="Dispositivos vinculados" />
         <item
-            android:id="@+id/nav_manage"
+            android:id="@+id/nav_configuracion"
             android:icon="@drawable/ic_menu_manage"
             android:title="Configuracion" />
     </group>

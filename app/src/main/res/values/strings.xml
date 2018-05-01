@@ -5,7 +5,7 @@
     <string name="nav_header_title">Sistema De Riego</string>
     <string name="nav_header_subtitle">riegoapp@gmail.com</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Reportar Problema</string>
+    <string name="action_settings">Activar Bluetooth</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
