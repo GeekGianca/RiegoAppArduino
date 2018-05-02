@@ -3,6 +3,7 @@ package com.geekprogrammer.riegoapp.Threads;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -27,7 +28,9 @@ public class BluetoothThreadConnection extends Thread {
         {
             tmpIn = socket.getInputStream();
             tmpOut = socket.getOutputStream();
-        } catch (IOException e) { }
+        } catch (IOException e) {
+            Log.d("Exception Constructor",e.toString());
+        }
         mmInStream = tmpIn;
         mmOutStream = tmpOut;
     }
@@ -45,6 +48,7 @@ public class BluetoothThreadConnection extends Thread {
                 // Envia los datos obtenidos hacia el evento via handler
                 handlerBluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
             } catch (IOException e) {
+                Log.d("Exception in thread",e.toString());
                 break;
             }
         }
@@ -59,6 +63,7 @@ public class BluetoothThreadConnection extends Thread {
         catch (IOException e)
         {
             //si no es posible enviar datos se cierra la conexión
+            Log.e("Write Error","Sin Conexion");
             Toast.makeText(context, "La Conexión fallo", Toast.LENGTH_LONG).show();
         }
     }

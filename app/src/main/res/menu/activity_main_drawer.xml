@@ -7,7 +7,7 @@
         <item
             android:id="@+id/nav_regados"
             android:icon="@drawable/ic_invert_colors_black"
-            android:title="Regados" />
+            android:title="Riego manual" />
         <item
             android:id="@+id/nav_fechas_riego"
             android:icon="@drawable/ic_date_range"

@@ -1,9 +1,11 @@
 package com.geekprogrammer.riegoapp;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +21,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.geekprogrammer.riegoapp.Threads.BluetoothThreadConnection;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,6 +36,7 @@ import java.util.UUID;
  */
 public class DashboardFragment extends Fragment {
 
+    //private ProgressDialog pDialog;
     TextView idDevice;
     Button btnOn;
     Button btnOff;
@@ -42,7 +47,8 @@ public class DashboardFragment extends Fragment {
     private BluetoothAdapter bluetoothAdapter = null;
     private BluetoothSocket bluetoothSocket = null;
     private StringBuilder dataStringInput = new StringBuilder();
-    private ConnectedThread connectedThread;
+    //private ConnectedThread connectedThread;
+    private BluetoothThreadConnection connectedThread;
 
     // Identificador unico de servicio - SPP UUID
     private static final UUID UUIDBT = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -66,6 +72,12 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        /*pDialog = new ProgressDialog(getContext());
+        pDialog.setTitle("Esperando conexion");
+        pDialog.setMessage("Conectando...");
+        pDialog.show();*/
+
         idDevice = (TextView)view.findViewById(R.id.text_control);
         idDevice.setText(getArguments().getString("devices_address"));
         btnOn = (Button)view.findViewById(R.id.btnOn);
@@ -85,6 +97,7 @@ public class DashboardFragment extends Fragment {
 
                     if (endOfLineIndex > 0) {
                         String inputData = dataStringInput.substring(0, endOfLineIndex);
+                        Log.d("Data", inputData);
                         buffered.setText(inputData);
                         dataStringInput.delete(0, dataStringInput.length());
                     }
@@ -105,7 +118,6 @@ public class DashboardFragment extends Fragment {
                 connectedThread.write("0");
             }
         });
-
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         checkState();
 
@@ -118,9 +130,9 @@ public class DashboardFragment extends Fragment {
             if (!bluetoothAdapter.isEnabled()){
                 Intent enablebt = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enablebt, REQUEST_ENABLE_BT);
-            }else{
+            }/*else{
                 Toast.makeText(getContext(), "En espera de Conexion", Toast.LENGTH_SHORT).show();
-            }
+            }*/
         }
     }
 
@@ -135,7 +147,7 @@ public class DashboardFragment extends Fragment {
             Log.d("IOException",e.toString());
             Toast.makeText(getContext(), "Error: "+e.toString(), Toast.LENGTH_SHORT).show();
         }
-        connectedThread = new ConnectedThread(bluetoothSocket);
+        connectedThread = new BluetoothThreadConnection(bluetoothSocket, handlerBluetoothIn, getContext(), handlerState);
         connectedThread.start();
     }
 
@@ -144,6 +156,19 @@ public class DashboardFragment extends Fragment {
         super.onPause();
         try {
             bluetoothSocket.close();
+            Log.d("onPause","Connection Close");
+        } catch (IOException e) {
+            Log.d("IOException",e.toString());
+            Toast.makeText(getContext(), "Error: "+e.toString(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try {
+            bluetoothSocket.close();
+            Log.d("BTSocket","Connection Close");
         } catch (IOException e) {
             Log.d("IOException",e.toString());
             Toast.makeText(getContext(), "Error: "+e.toString(), Toast.LENGTH_SHORT).show();

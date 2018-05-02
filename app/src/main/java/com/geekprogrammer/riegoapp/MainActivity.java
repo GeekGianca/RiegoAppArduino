@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity
 
     private void upServiceStatus() {
         AlertDialog.Builder mDialog = new AlertDialog.Builder(this);
+
         mDialog.setTitle("Riegos Programados");
         mDialog.setIcon(R.drawable.ic_invert_colors_black);
         mDialog.setMessage("Ingrese los datos de riego programados");
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity
                 startService(new Intent(MainActivity.this, ServicesBackground.class));
             }
         });
+        mDialog.show();
     }
 
     private void startFragment(){
@@ -151,8 +153,13 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+
         if (id == R.id.nav_regados) {
-            // Handle the camera action
+            ft.replace(R.id.screen_area, new HomeFragment());
+            ft.addToBackStack(null);
+            ft.commit();
         } else if (id == R.id.nav_fechas_riego) {
 
         } else if (id == R.id.nav_dispositivos) {
