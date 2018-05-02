@@ -1,7 +1,9 @@
 package com.geekprogrammer.riegoapp;
 
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -46,8 +48,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 Snackbar.make(view, "Fechas no asignadas", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-
-                startService(new Intent(MainActivity.this, ServicesBackground.class));
+                upServiceStatus();
             }
         });
 
@@ -61,6 +62,19 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         checkState();
+    }
+
+    private void upServiceStatus() {
+        AlertDialog.Builder mDialog = new AlertDialog.Builder(this);
+        mDialog.setTitle("Riegos Programados");
+        mDialog.setIcon(R.drawable.ic_invert_colors_black);
+        mDialog.setMessage("Ingrese los datos de riego programados");
+        mDialog.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startService(new Intent(MainActivity.this, ServicesBackground.class));
+            }
+        });
     }
 
     private void startFragment(){
