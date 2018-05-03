@@ -14,7 +14,7 @@ import com.geekprogrammer.riegoapp.R;
 
 public class NotificationHelper extends ContextWrapper {
 
-    private static final String CHANNEL_ID = "com.geekprogrammer.riegoapp.GEEK";
+    public static final String CHANNEL_ID = "com.geekprogrammer.riegoapp.GEEK";
     private static final String CHANNEL_NAME = "GEEK Channel";
     private NotificationManager manager;
 

@@ -13,6 +13,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -143,12 +144,21 @@ public class DashboardFragment extends Fragment {
         try {
             bluetoothSocket = createConnectionSecure(device);
             bluetoothSocket.connect();
+            connectedThread = new BluetoothThreadConnection(bluetoothSocket, handlerBluetoothIn, getContext(), handlerState);
+            connectedThread.start();
         } catch (IOException e) {
-            Log.d("IOException",e.toString());
+            Log.d("IOException onResume",e.toString());
             Toast.makeText(getContext(), "Error: "+e.toString(), Toast.LENGTH_SHORT).show();
+            returnToBlock();
         }
-        connectedThread = new BluetoothThreadConnection(bluetoothSocket, handlerBluetoothIn, getContext(), handlerState);
-        connectedThread.start();
+    }
+
+    private void returnToBlock() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(R.id.screen_area, new HomeFragment());
+        ft.addToBackStack(null);
+        ft.commit();
+        Toast.makeText(getContext(), "Este dispositivo no es compatible", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -158,7 +168,7 @@ public class DashboardFragment extends Fragment {
             bluetoothSocket.close();
             Log.d("onPause","Connection Close");
         } catch (IOException e) {
-            Log.d("IOException",e.toString());
+            Log.d("IOException On Pause",e.toString());
             Toast.makeText(getContext(), "Error: "+e.toString(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -170,7 +180,7 @@ public class DashboardFragment extends Fragment {
             bluetoothSocket.close();
             Log.d("BTSocket","Connection Close");
         } catch (IOException e) {
-            Log.d("IOException",e.toString());
+            Log.d("IOException on Destroy",e.toString());
             Toast.makeText(getContext(), "Error: "+e.toString(), Toast.LENGTH_SHORT).show();
         }
     }

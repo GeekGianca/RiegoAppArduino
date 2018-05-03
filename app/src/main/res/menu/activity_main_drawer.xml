@@ -11,7 +11,7 @@
         <item
             android:id="@+id/nav_fechas_riego"
             android:icon="@drawable/ic_date_range"
-            android:title="Fechas de riego" />
+            android:title="Definir rangos" />
         <item
             android:id="@+id/nav_dispositivos"
             android:icon="@drawable/ic_bluetooth"

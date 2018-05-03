@@ -13,10 +13,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.geekprogrammer.riegoapp.Helper.NotificationHelper;
+import com.geekprogrammer.riegoapp.R;
 
 public class ServicesBackground extends Service {
     private Context context = this;
     private NotificationHelper helper;
+    private Notification mBuilder;
 
     @Override
     public void onCreate() {
@@ -24,9 +26,20 @@ public class ServicesBackground extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        helper = new NotificationHelper(this);
-        Notification.Builder builder = helper.getGeekChannelNotification("New Notification", "Cargando datos de riego");
-        helper.getManager().notify(1, builder.build());
+        try {
+            helper = new NotificationHelper(this);
+            Notification.Builder builder = helper.getGeekChannelNotification("New Notification", "Cargando datos de riego");
+            helper.getManager().notify(1, builder.build());
+        }catch (Exception e){
+            mBuilder = new NotificationCompat.Builder(this, helper.CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_invert_colors_black)
+                    .setContentTitle("New Notification")
+                    .setContentText("Cargando datos de riego")
+                    .build();
+            NotificationManager manager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+            mBuilder.flags = Notification.FLAG_AUTO_CANCEL;
+            manager.notify(1, mBuilder);
+        }
         return START_STICKY;
     }
 

@@ -33,16 +33,18 @@ public class MainActivity extends AppCompatActivity
     private BluetoothAdapter bluetoothAdapter;
     private static final int REQUEST_ENABLE_BT = 1;
     TextView stateBluetooth;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         stateBluetooth = (TextView)findViewById(R.id.bluetoothState);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
                 upServiceStatus();
             }
-        });
+        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -66,7 +68,6 @@ public class MainActivity extends AppCompatActivity
 
     private void upServiceStatus() {
         AlertDialog.Builder mDialog = new AlertDialog.Builder(this);
-
         mDialog.setTitle("Riegos Programados");
         mDialog.setIcon(R.drawable.ic_invert_colors_black);
         mDialog.setMessage("Ingrese los datos de riego programados");
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity
         ft.replace(R.id.screen_area, new HomeFragment());
         ft.addToBackStack(null);
         ft.commit();
+        toolbar.setTitle("Dispositivos");
     }
 
     @Override
@@ -139,10 +141,10 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            checkState();
+        /*if (id == R.id.action_settings) {
+            //checkState();
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -152,16 +154,17 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-
 
         if (id == R.id.nav_regados) {
             ft.replace(R.id.screen_area, new HomeFragment());
             ft.addToBackStack(null);
             ft.commit();
         } else if (id == R.id.nav_fechas_riego) {
-
+            toolbar.setTitle("Rangos y fechas");
+            ft.replace(R.id.screen_area, new DatetimeFragment());
+            ft.addToBackStack(null);
+            ft.commit();
         } else if (id == R.id.nav_dispositivos) {
 
         } else if (id == R.id.nav_configuracion) {

@@ -53,10 +53,22 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        swipe = (SwipeRefreshLayout)view.findViewById(R.id.swipe);
         recyclerView = (RecyclerView)view.findViewById(R.id.listBluetooth);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
+        /*swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadListDevices();
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });*/
         loadListDevices();
     }
 
