@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         stateBluetooth = (TextView)findViewById(R.id.bluetoothState);
 
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -50,7 +49,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 Snackbar.make(view, "Fechas no asignadas", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-                upServiceStatus();
+
             }
         });*/
 
@@ -81,11 +80,24 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startFragment(){
+        toolbar.setTitle("Dispositivos");
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.screen_area, new HomeFragment());
         ft.addToBackStack(null);
         ft.commit();
-        toolbar.setTitle("Dispositivos");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.e("Destruido","Tarea iniciada");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //upServiceStatus();
+        //startService(new Intent(MainActivity.this, ServicesBackground.class));
     }
 
     @Override
@@ -108,7 +120,6 @@ public class MainActivity extends AppCompatActivity
             if (!bluetoothAdapter.isEnabled()){
                 Intent enablebt = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enablebt, REQUEST_ENABLE_BT);
-
             }else{
                 Toast.makeText(this, "Bluetooth Encendido", Toast.LENGTH_SHORT).show();
                 startFragment();

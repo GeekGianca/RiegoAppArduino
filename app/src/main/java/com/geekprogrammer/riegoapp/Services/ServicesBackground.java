@@ -15,10 +15,13 @@ import android.widget.Toast;
 import com.geekprogrammer.riegoapp.Helper.NotificationHelper;
 import com.geekprogrammer.riegoapp.R;
 
+import java.util.Calendar;
+
 public class ServicesBackground extends Service {
     private Context context = this;
     private NotificationHelper helper;
     private Notification mBuilder;
+    private Calendar cTime = Calendar.getInstance();
 
     @Override
     public void onCreate() {
@@ -26,20 +29,7 @@ public class ServicesBackground extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        try {
-            helper = new NotificationHelper(this);
-            Notification.Builder builder = helper.getGeekChannelNotification("New Notification", "Cargando datos de riego");
-            helper.getManager().notify(1, builder.build());
-        }catch (Exception e){
-            mBuilder = new NotificationCompat.Builder(this, helper.CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_invert_colors_black)
-                    .setContentTitle("New Notification")
-                    .setContentText("Cargando datos de riego")
-                    .build();
-            NotificationManager manager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-            mBuilder.flags = Notification.FLAG_AUTO_CANCEL;
-            manager.notify(1, mBuilder);
-        }
+        Toast.makeText(context, "Servicio iniciado", Toast.LENGTH_SHORT).show();
         return START_STICKY;
     }
 
@@ -54,3 +44,31 @@ public class ServicesBackground extends Service {
         return null;
     }
 }
+/*int cHour = cTime.get(Calendar.HOUR_OF_DAY);
+        int minute = cTime.get(Calendar.MINUTE);
+        String time = String.format("%s:%s",cHour,minute);
+        Log.e("Time Background", time);
+        int hr = 8;
+        int min = 59;
+        Toast.makeText(context, "Servicio en background", Toast.LENGTH_SHORT).show();
+        while (true){
+            if (cHour == hr && minute == min){
+                try {
+                    helper = new NotificationHelper(this);
+                    Notification.Builder builder = helper.getGeekChannelNotification("New Notification", "Cargando datos de riego");
+                    helper.getManager().notify(1, builder.build());
+                }catch (Exception e){
+                    mBuilder = new NotificationCompat.Builder(this, helper.CHANNEL_ID)
+                            .setSmallIcon(R.drawable.ic_invert_colors_black)
+                            .setContentTitle("New Notification")
+                            .setContentText("Cargando datos de riego")
+                            .build();
+                    NotificationManager manager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+                    mBuilder.flags = Notification.FLAG_AUTO_CANCEL;
+                    manager.notify(1, mBuilder);
+                }
+                break;
+            }else{
+                Log.e("Execute", "Task");
+            }
+        }*/

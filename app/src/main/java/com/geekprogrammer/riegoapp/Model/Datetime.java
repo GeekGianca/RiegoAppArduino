@@ -3,13 +3,13 @@ package com.geekprogrammer.riegoapp.Model;
 public class Datetime {
     private String date;
     private String time;
-    private String duration;
+    private int duration;
     private String state;
 
     public Datetime() {
     }
 
-    public Datetime(String date, String time, String duration, String state) {
+    public Datetime(String date, String time, int duration, String state) {
         this.date = date;
         this.time = time;
         this.duration = duration;
@@ -32,11 +32,11 @@ public class Datetime {
         this.time = time;
     }
 
-    public String getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public void setDuration(String duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 

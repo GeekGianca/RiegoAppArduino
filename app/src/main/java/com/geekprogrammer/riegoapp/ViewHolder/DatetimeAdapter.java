@@ -1,8 +1,9 @@
 package com.geekprogrammer.riegoapp.ViewHolder;
 
-import android.app.FragmentManager;
+import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,10 +56,10 @@ public class DatetimeAdapter extends RecyclerView.Adapter<DatetimeViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull DatetimeViewHolder holder, int position) {
-        holder.date.setText(listDates.get(position).getDate());
-        holder.time.setText(listDates.get(position).getTime());
-        holder.duration.setText(listDates.get(position).getDuration());
-        holder.state.setText(listDates.get(position).getState());
+        holder.date.setText(String.format("Fecha: %s",listDates.get(position).getDate()));
+        holder.time.setText(String.format("Hora: %s",listDates.get(position).getTime()));
+        holder.duration.setText(String.format("Duracion: %s m",listDates.get(position).getDuration()));
+        holder.state.setText(String.format("Estado: %s",listDates.get(position).getState()));
     }
 
     @Override
