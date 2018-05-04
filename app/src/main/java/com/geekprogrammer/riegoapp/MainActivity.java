@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         checkState();
+        upServiceStatus();
     }
 
     private void upServiceStatus() {
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
-        //upServiceStatus();
+        //
         //startService(new Intent(MainActivity.this, ServicesBackground.class));
     }
 
