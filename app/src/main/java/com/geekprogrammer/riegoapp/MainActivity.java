@@ -1,8 +1,11 @@
 package com.geekprogrammer.riegoapp;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,7 +28,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.geekprogrammer.riegoapp.Helper.NotificationHelper;
+import com.geekprogrammer.riegoapp.Services.AlertReceiver;
 import com.geekprogrammer.riegoapp.Services.ServicesBackground;
+import com.geekprogrammer.riegoapp.Services.ServicesInBackground;
+
+import java.util.GregorianCalendar;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -92,13 +99,20 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         Log.e("Destruido","Tarea iniciada");
+        Intent intent = new Intent(this, ServicesInBackground.class);
+        intent.putExtra("hour", 8);
+        intent.putExtra("minuts", 30);
+        startService(intent);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        //
-        //startService(new Intent(MainActivity.this, ServicesBackground.class));
+        Log.d("Servicio", "Iniciado");
+        Intent intent = new Intent(this, ServicesInBackground.class);
+        intent.putExtra("hour", 8);
+        intent.putExtra("minuts", 30);
+        startService(intent);
     }
 
     @Override

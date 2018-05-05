@@ -21,6 +21,7 @@
             </intent-filter>
         </activity>
         <service android:name=".Services.ServicesBackground" android:exported="false"/>
+        <service android:name=".Services.ServicesInBackground" android:exported="false"/>
     </application>
 
 </manifest>

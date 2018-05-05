@@ -1,7 +1,9 @@
 package com.geekprogrammer.riegoapp.Services;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +18,7 @@ import com.geekprogrammer.riegoapp.Helper.NotificationHelper;
 import com.geekprogrammer.riegoapp.R;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class ServicesBackground extends Service {
     private Context context = this;
@@ -29,7 +32,15 @@ public class ServicesBackground extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(context, "Servicio iniciado", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(context, "Servicio iniciado", Toast.LENGTH_SHORT).show();
+        Log.d("Servicio", "Iniciado");
+        Long alertTime = new GregorianCalendar().getTimeInMillis()+5*1000;
+        Intent alertIntent = new Intent(this, AlertReceiver.class);
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime, PendingIntent.getBroadcast(this,
+                1,
+                alertIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT));
         return START_STICKY;
     }
 
