@@ -38,12 +38,10 @@ public class DatetimeAdapter extends RecyclerView.Adapter<DatetimeViewHolder> {
 
     List<Datetime> listDates = new ArrayList<>();
     Context context;
-    FragmentManager fragmentManager;
 
-    public DatetimeAdapter(List<Datetime> listDates, Context context, FragmentManager fragmentManager) {
+    public DatetimeAdapter(List<Datetime> listDates, Context context) {
         this.listDates = listDates;
         this.context = context;
-        this.fragmentManager = fragmentManager;
     }
 
     @NonNull

@@ -1,19 +1,18 @@
 package com.geekprogrammer.riegoapp;
 
-import android.app.AlarmManager;
+
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
-import android.content.Context;
+import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -24,15 +23,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.geekprogrammer.riegoapp.Helper.NotificationHelper;
-import com.geekprogrammer.riegoapp.Services.AlertReceiver;
-import com.geekprogrammer.riegoapp.Services.ServicesBackground;
-import com.geekprogrammer.riegoapp.Services.ServicesInBackground;
+import com.geekprogrammer.riegoapp.Model.Devices;
+import com.geekprogrammer.riegoapp.ViewHolder.DevicesAdapter;
 
-import java.util.GregorianCalendar;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -42,15 +43,26 @@ public class MainActivity extends AppCompatActivity
     TextView stateBluetooth;
     Toolbar toolbar;
 
+    RecyclerView recyclerView;
+    RecyclerView.LayoutManager layoutManager;
+
+    List<Devices> devices = new ArrayList<>();
+    DevicesAdapter adapter;
+
+    SwipeRefreshLayout swipe;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar.setTitle("Menu Dispositivos");
+
         stateBluetooth = (TextView)findViewById(R.id.bluetoothState);
 
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -58,7 +70,7 @@ public class MainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
 
             }
-        });*/
+        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -70,7 +82,38 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         checkState();
-        upServiceStatus();
+
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        swipe = (SwipeRefreshLayout)findViewById(R.id.swipe);
+        recyclerView = (RecyclerView)findViewById(R.id.listBluetooth);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                devices.clear();
+                loadListDevices();
+            }
+        });
+        loadListDevices();
+    }
+
+    private void loadListDevices() {
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+        if (pairedDevices.size() > 0){
+            for (BluetoothDevice device : pairedDevices){
+                Devices dev = new Devices(device.getName(), device.getAddress());
+                devices.add(dev);
+                Log.v("Devices: ", device.getName());
+            }
+            adapter = new DevicesAdapter(devices, this);
+            adapter.notifyDataSetChanged();
+            recyclerView.setAdapter(adapter);
+        }else{
+            Log.d("No Devices: ", "Sin dispositivos");
+        }
+        swipe.setRefreshing(false);
     }
 
     private void upServiceStatus() {
@@ -81,38 +124,16 @@ public class MainActivity extends AppCompatActivity
         mDialog.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                startService(new Intent(MainActivity.this, ServicesBackground.class));
+                //startService(new Intent(MainActivity.this, ServicesBackground.class));
             }
         });
         mDialog.show();
-    }
-
-    private void startFragment(){
-        toolbar.setTitle("Dispositivos");
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.screen_area, new HomeFragment());
-        ft.addToBackStack(null);
-        ft.commit();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.e("Destruido","Tarea iniciada");
-        Intent intent = new Intent(this, ServicesInBackground.class);
-        intent.putExtra("hour", 8);
-        intent.putExtra("minuts", 30);
-        startService(intent);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         Log.d("Servicio", "Iniciado");
-        Intent intent = new Intent(this, ServicesInBackground.class);
-        intent.putExtra("hour", 8);
-        intent.putExtra("minuts", 30);
-        startService(intent);
     }
 
     @Override
@@ -120,7 +141,6 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode==REQUEST_ENABLE_BT && bluetoothAdapter.isEnabled()){
             Toast.makeText(this, "Bluetooth Encendido", Toast.LENGTH_SHORT).show();
-            startFragment();
             stateBluetooth.setVisibility(View.INVISIBLE);
         }else{
             stateBluetooth.setVisibility(View.VISIBLE);
@@ -135,9 +155,6 @@ public class MainActivity extends AppCompatActivity
             if (!bluetoothAdapter.isEnabled()){
                 Intent enablebt = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enablebt, REQUEST_ENABLE_BT);
-            }else{
-                Toast.makeText(this, "Bluetooth Encendido", Toast.LENGTH_SHORT).show();
-                startFragment();
             }
         }
     }
@@ -180,17 +197,12 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
         if (id == R.id.nav_regados) {
-            ft.replace(R.id.screen_area, new HomeFragment());
-            ft.addToBackStack(null);
-            ft.commit();
+
         } else if (id == R.id.nav_fechas_riego) {
-            toolbar.setTitle("Rangos y fechas");
-            ft.replace(R.id.screen_area, new DatetimeFragment());
-            ft.addToBackStack(null);
-            ft.commit();
+            startActivity(new Intent(MainActivity.this, DatetimeActivity.class));
+            finish();
         } else if (id == R.id.nav_dispositivos) {
 
         } else if (id == R.id.nav_configuracion) {

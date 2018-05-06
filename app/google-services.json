@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1009674437458",
+    "firebase_url": "https://riegoapp-71035.firebaseio.com",
+    "project_id": "riegoapp-71035",
+    "storage_bucket": "riegoapp-71035.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1009674437458:android:73202ec3004c10ee",
+        "android_client_info": {
+          "package_name": "com.geekprogrammer.riegoapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1009674437458-hsivaphem1prlasubm42k40sg26vred5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.geekprogrammer.riegoapp",
+            "certificate_hash": "360d66bc25d2c2b83e0818faa723da98ea62fd16"
+          }
+        },
+        {
+          "client_id": "1009674437458-m3h49c5b6j7bo956h81hm8gd3gpefgik.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAA5YUzlT92HDt0iTsb7ZS715vMfg4BTdk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1009674437458-m3h49c5b6j7bo956h81hm8gd3gpefgik.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
