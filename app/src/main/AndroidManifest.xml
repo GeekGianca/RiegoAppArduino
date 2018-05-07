@@ -31,6 +31,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.geekprogrammer.riegoapp.DatetimeActivity" />
         </activity>
+
+        <service android:name=".Services.RiegoAutomatico" android:enabled="true"/>
     </application>
 
 </manifest>

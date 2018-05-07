@@ -1,10 +1,18 @@
 package com.geekprogrammer.riegoapp.Model;
 
+import com.google.firebase.database.Exclude;
+import com.google.firebase.database.IgnoreExtraProperties;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@IgnoreExtraProperties
 public class Datetime {
     private String date;
     private String time;
     private int duration;
     private String state;
+    public Map<String, Boolean> datetime = new HashMap<>();
 
     public Datetime() {
     }
@@ -46,5 +54,15 @@ public class Datetime {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    @Exclude
+    public Map<String, Object> toMap(){
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("", date);
+        result.put("", time);
+        result.put("", duration);
+        result.put("", state);
+        return result;
     }
 }

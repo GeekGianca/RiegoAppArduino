@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -37,11 +38,11 @@ public class DatetimeActivity extends AppCompatActivity {
     DatetimeAdapter adapter;
     Datetime datetime;
 
-    Button btnAdd;
+    //Button btnAdd;
     private Calendar cCurrentTime;
     Toolbar toolbar;
     Date fActual = new Date();
-    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
     String feActual = "";
 
     @Override
@@ -57,26 +58,30 @@ public class DatetimeActivity extends AppCompatActivity {
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
 
-        btnAdd = (Button)findViewById(R.id.btnAdd);
+        //btnAdd = (Button)findViewById(R.id.btnAdd);
         recyclerView = (RecyclerView)findViewById(R.id.listDatetime);
         recyclerView.setHasFixedSize(true);
         lManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(lManager);
         cCurrentTime = Calendar.getInstance();
         //Add to firebase
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addDatetime();
-            }
-        });
         feActual = dateFormat.format(fActual);
         Log.d("Format Date", feActual);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        return super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.add_item_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.add_datetime){
+            addDatetime();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void addDatetime() {

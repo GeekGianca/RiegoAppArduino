@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.geekprogrammer.riegoapp.Model.Devices;
+import com.geekprogrammer.riegoapp.Services.RiegoAutomatico;
 import com.geekprogrammer.riegoapp.ViewHolder.DevicesAdapter;
 
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity
 
         stateBluetooth = (TextView)findViewById(R.id.bluetoothState);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
 
             }
-        });
+        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
         loadListDevices();
+        //startService(new Intent(MainActivity.this, RiegoAutomatico.class));
     }
 
     private void loadListDevices() {
@@ -184,10 +186,10 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        /*if (id == R.id.action_settings) {
+        if (id == R.id.on_bluetooth) {
             //checkState();
             return true;
-        }*/
+        }
 
         return super.onOptionsItemSelected(item);
     }

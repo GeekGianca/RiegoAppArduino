@@ -8,8 +8,10 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +29,7 @@ public class BluetoothActivity extends AppCompatActivity {
     TextView idDevice;
     Button btnOn;
     Button btnOff;
+    Toolbar toolbar;
     TextView buffered;
     //Vars Need for bluetooth connection
     Handler handlerBluetoothIn;
@@ -49,6 +52,15 @@ public class BluetoothActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar.setTitle("Riego manual");
+        ActionBar ab = getSupportActionBar();
+        // Enable the Up button
+        ab.setDisplayHomeAsUpEnabled(true);
+
         idDevice = (TextView)findViewById(R.id.text_control);
         btnOn = (Button)findViewById(R.id.btnOn);
         btnOff = (Button)findViewById(R.id.btnOff);
@@ -119,7 +131,6 @@ public class BluetoothActivity extends AppCompatActivity {
     }
 
     //Overrides
-
     @Override
     public void onResume() {
         super.onResume();
