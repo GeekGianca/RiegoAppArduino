@@ -143,6 +143,7 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode==REQUEST_ENABLE_BT && bluetoothAdapter.isEnabled()){
             Toast.makeText(this, "Bluetooth Encendido", Toast.LENGTH_SHORT).show();
+            loadListDevices();
             stateBluetooth.setVisibility(View.INVISIBLE);
         }else{
             stateBluetooth.setVisibility(View.VISIBLE);

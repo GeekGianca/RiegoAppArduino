@@ -32,7 +32,8 @@
                 android:value="com.geekprogrammer.riegoapp.DatetimeActivity" />
         </activity>
 
-        <service android:name=".Services.RiegoAutomatico" android:enabled="true"/>
+        <service android:name=".Services$RiegoAutomatico"/>
+        <receiver android:name=".Services.AutomaticIrrigationReceiver" android:enabled="true" android:exported="true"/>
     </application>
 
 </manifest>

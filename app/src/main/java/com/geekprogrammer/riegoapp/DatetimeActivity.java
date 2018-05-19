@@ -1,9 +1,13 @@
 package com.geekprogrammer.riegoapp;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +26,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.geekprogrammer.riegoapp.Model.Datetime;
+import com.geekprogrammer.riegoapp.Services.AutomaticIrrigationReceiver;
 import com.geekprogrammer.riegoapp.ViewHolder.DatetimeAdapter;
 
 import java.text.SimpleDateFormat;
@@ -152,7 +157,7 @@ public class DatetimeActivity extends AppCompatActivity {
     private void loadAlertDialogTime() {
         int hour = cCurrentTime.get(Calendar.HOUR_OF_DAY);
         int minute = cCurrentTime.get(Calendar.MINUTE);
-        TimePickerDialog timePickerDialog = new TimePickerDialog(DatetimeActivity.this, new TimePickerDialog.OnTimeSetListener() {
+        final TimePickerDialog timePickerDialog = new TimePickerDialog(DatetimeActivity.this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 String time = "";
@@ -163,6 +168,14 @@ public class DatetimeActivity extends AppCompatActivity {
                     time = String.valueOf(hourOfDay+":"+minute);
                 }
                 datetime.setTime(time);
+                cCurrentTime.set(
+                        cCurrentTime.get(Calendar.YEAR),
+                        cCurrentTime.get(Calendar.MONTH),
+                        cCurrentTime.get(Calendar.DAY_OF_MONTH),
+                        hourOfDay,
+                        minute,
+                        0
+                );
                 loadAlertDialogDate();
                 Toast.makeText(DatetimeActivity.this, hourOfDay+":"+minute, Toast.LENGTH_SHORT).show();
             }
@@ -175,5 +188,10 @@ public class DatetimeActivity extends AppCompatActivity {
         adapter = new DatetimeAdapter(listDatetime, this);
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
+        AlarmManager manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AutomaticIrrigationReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        manager.setRepeating(AlarmManager.RTC, cCurrentTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        Toast.makeText(this, "Inicio la alarma", Toast.LENGTH_SHORT).show();
     }
 }
