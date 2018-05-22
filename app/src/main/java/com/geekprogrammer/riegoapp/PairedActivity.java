@@ -3,6 +3,7 @@ package com.geekprogrammer.riegoapp;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.os.ParcelUuid;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,9 +20,12 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.geekprogrammer.riegoapp.Helper.DatabaseHelper;
 import com.geekprogrammer.riegoapp.Model.Devices;
 import com.geekprogrammer.riegoapp.ViewHolder.DevicesAdapter;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -37,25 +41,36 @@ public class PairedActivity extends AppCompatActivity {
     RecyclerView.LayoutManager layoutManager;
 
     List<Devices> devices = new ArrayList<>();
+    List<Devices> newDevices = new ArrayList<>();
     DevicesAdapter adapter;
 
     SwipeRefreshLayout swipe;
 
-    private void loadListDevices() {
+    DatabaseHelper dbhelper;
+
+    private void updateListDevices(){
+        dbhelper.cleanDevices();
         Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0){
             for (BluetoothDevice device : pairedDevices){
-                Devices dev = new Devices(device.getName(), device.getAddress());
-                devices.add(dev);
+                Devices dev = new Devices(device.getName(), device.getAddress(), 0);
+                dbhelper.addDevices(dev);
                 Log.v("Devices: ", device.getName());
             }
-            adapter = new DevicesAdapter(devices, this);
-            adapter.notifyDataSetChanged();
-            recyclerView.setAdapter(adapter);
-        }else{
-            Log.d("No Devices: ", "Sin dispositivos");
+            swipe.setRefreshing(false);
         }
-        swipe.setRefreshing(false);
+    }
+
+    private void loadListDevices() {
+        devices.clear();
+        devices = dbhelper.getDevices();
+        Log.d("Size List", devices.size()+"");
+        if (devices.size() == 0){
+            updateListDevices();
+        }
+        adapter = new DevicesAdapter(devices, this);
+        adapter.notifyDataSetChanged();
+        recyclerView.setAdapter(adapter);
     }
 
     private void checkState() {
@@ -82,6 +97,8 @@ public class PairedActivity extends AppCompatActivity {
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
 
+        dbhelper = new DatabaseHelper(this);
+
         stateBluetooth = (TextView)findViewById(R.id.bluetoothState);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -96,11 +113,13 @@ public class PairedActivity extends AppCompatActivity {
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                devices.clear();
+                updateListDevices();
                 loadListDevices();
             }
         });
+
         loadListDevices();
+        loadUUIDBt();
     }
 
     @Override
@@ -135,4 +154,21 @@ public class PairedActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    private void loadUUIDBt(){
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        Method getUuidsMethod = null;
+        try {
+            getUuidsMethod = BluetoothAdapter.class.getDeclaredMethod("getUuids", null);
+            ParcelUuid[] uuids = (ParcelUuid[]) getUuidsMethod.invoke(adapter, null);
+            if (uuids != null){
+                for(ParcelUuid uuid:uuids){
+                    Log.d("UUIDS",uuid.getUuid().toString());
+                }
+            }else{
+                Log.d("UUIDS","Uuid not found");
+            }
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            Log.e("Exception UUID", e.toString());
+        }
+    }
 }

@@ -21,18 +21,25 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.geekprogrammer.riegoapp.Common.Common;
+import com.geekprogrammer.riegoapp.Helper.DatabaseHelper;
 import com.geekprogrammer.riegoapp.Model.Devices;
+import com.geekprogrammer.riegoapp.Services.ResponseAndRequestHandlerBt;
 import com.geekprogrammer.riegoapp.ViewHolder.DevicesAdapter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import io.paperdb.Paper;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     Toolbar toolbar;
+    ResponseAndRequestHandlerBt rsrhb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +50,8 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setTitle("Pig Shower");
 
+        DatabaseHelper db = new DatabaseHelper(this);
+        Common.mCurrentDevice = db.getDevice("PigShowerBt");
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,6 +70,14 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        //checkStatusConnection();
+    }
+
+    private void checkStatusConnection(){
+        Paper.init(this);
+        rsrhb = new ResponseAndRequestHandlerBt(this);
+        String state = String.valueOf(Paper.book().read("STATE"));
+        rsrhb.execute(state);
     }
 
     @Override
@@ -109,7 +126,15 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_regados) {
-
+            try{
+                Intent btA = new Intent(MainActivity.this, BluetoothActivity.class);
+                btA.putExtra("devices_address", Common.mCurrentDevice.getDevice_uid());
+                startActivity(btA);
+                finish();
+            }catch (NullPointerException npe){
+                Log.e("NullPE No Mac", npe.getMessage());
+                Toast.makeText(this, "No hay MAC vinculada al Bluetooth", Toast.LENGTH_SHORT).show();
+            }
         } else if (id == R.id.nav_fechas_riego) {
             startActivity(new Intent(MainActivity.this, DatetimeActivity.class));
             finish();
@@ -119,7 +144,6 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_configuracion) {
 
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

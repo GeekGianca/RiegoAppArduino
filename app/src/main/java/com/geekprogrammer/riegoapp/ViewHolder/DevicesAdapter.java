@@ -70,13 +70,6 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesViewHolder>{
                 Intent goStart = new Intent(context, BluetoothActivity.class);
                 goStart.putExtra("devices_address", address);
                 context.startActivity(goStart);
-                /*FragmentTransaction ft = fm.beginTransaction();
-                DashboardFragment df = new DashboardFragment();
-                Bundle deviceArgs = new Bundle();
-                deviceArgs.putString("devices_address", address);
-                df.setArguments(deviceArgs);
-                ft.replace(R.id.screen_area, df);
-                ft.commit();*/
             }
         });
     }

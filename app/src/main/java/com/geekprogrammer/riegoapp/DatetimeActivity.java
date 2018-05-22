@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.geekprogrammer.riegoapp.Helper.DatabaseHelper;
 import com.geekprogrammer.riegoapp.Model.Datetime;
 import com.geekprogrammer.riegoapp.Services.AutomaticIrrigationReceiver;
 import com.geekprogrammer.riegoapp.ViewHolder.DatetimeAdapter;
@@ -41,6 +42,7 @@ public class DatetimeActivity extends AppCompatActivity {
     List<Datetime> listDatetime = new ArrayList<>();
     DatetimeAdapter adapter;
     Datetime datetime;
+    DatabaseHelper dbHelper;
 
     //Button btnAdd;
     private Calendar cCurrentTime;
@@ -61,6 +63,8 @@ public class DatetimeActivity extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
+
+        dbHelper = new DatabaseHelper(this);
 
         //btnAdd = (Button)findViewById(R.id.btnAdd);
         recyclerView = (RecyclerView)findViewById(R.id.listDatetime);
@@ -115,7 +119,6 @@ public class DatetimeActivity extends AppCompatActivity {
                 Toast.makeText(DatetimeActivity.this, timeDuration.getText().toString(), Toast.LENGTH_SHORT).show();
                 datetime.setDuration(Integer.parseInt(timeDuration.getText().toString()));
                 datetime.setState("En espera");
-                listDatetime.add(datetime);
                 loadListDatetime();
             }
         });
@@ -141,7 +144,7 @@ public class DatetimeActivity extends AppCompatActivity {
                 }
 
                 String sYear = String.valueOf(year);
-                String date = String.valueOf(sDay+"/"+sMonth+"/"+sYear);
+                String date = String.valueOf(sMonth+"/"+sDay+"/"+sYear);
                 datetime.setDate(date);
                 Log.d("Format Date",date);
 
@@ -174,6 +177,7 @@ public class DatetimeActivity extends AppCompatActivity {
                     time = String.valueOf(hourOfDay+":"+minute);
                 }
                 datetime.setTime(time);
+                Log.d("Datetime Current", hourOfDay+":"+minute+":"+0);
                 cCurrentTime.set(
                         cCurrentTime.get(Calendar.YEAR),
                         cCurrentTime.get(Calendar.MONTH),
@@ -191,6 +195,8 @@ public class DatetimeActivity extends AppCompatActivity {
     }
 
     private void loadListDatetime() {
+        dbHelper.addDatetime(datetime);
+        listDatetime = dbHelper.getTimes();
         adapter = new DatetimeAdapter(listDatetime, this);
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
@@ -198,6 +204,6 @@ public class DatetimeActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AutomaticIrrigationReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
         manager.setRepeating(AlarmManager.RTC, cCurrentTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-        Toast.makeText(this, "Inicio la alarma", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Riego automatico configurado", Toast.LENGTH_SHORT).show();
     }
 }

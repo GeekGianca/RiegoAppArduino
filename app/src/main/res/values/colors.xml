@@ -8,4 +8,5 @@
     <color name="colorPrimaryText">#212121</color>
     <color name="colorSecundaryText">#757575</color>
     <color name="colorDividerColor">#BDBDBD</color>
+    <color name="overlayColorBackground">#4e39ec08</color>
 </resources>

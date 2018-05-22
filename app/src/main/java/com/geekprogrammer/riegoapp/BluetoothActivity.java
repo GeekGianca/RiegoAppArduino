@@ -42,7 +42,7 @@ public class BluetoothActivity extends AppCompatActivity {
     private BluetoothThreadConnection connectedThread;
 
     // Identificador unico de servicio - SPP UUID
-    private static final UUID UUIDBT = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private static final UUID UUIDBT = UUID.fromString("0000111f-0000-1000-8000-00805f9b34fb");
     // String para la direccion MAC
     private static String macAddress = null;
 

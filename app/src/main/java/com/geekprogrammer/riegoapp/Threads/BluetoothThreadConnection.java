@@ -19,6 +19,7 @@ public class BluetoothThreadConnection extends Thread {
 
     public BluetoothThreadConnection(BluetoothSocket socket, Handler handler, Context context, int state)
     {
+        Log.d("Constructor","Init Thread Connection");
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
         handlerBluetoothIn = handler;
