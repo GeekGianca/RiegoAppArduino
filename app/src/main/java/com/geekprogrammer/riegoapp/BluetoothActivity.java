@@ -22,6 +22,8 @@ import com.geekprogrammer.riegoapp.Threads.BluetoothThreadConnection;
 import java.io.IOException;
 import java.util.UUID;
 
+import io.paperdb.Paper;
+
 public class BluetoothActivity extends AppCompatActivity {
 
     //private ProgressDialog pDialog;
@@ -60,6 +62,8 @@ public class BluetoothActivity extends AppCompatActivity {
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
 
+        Paper.init(this);
+
         idDevice = (TextView)findViewById(R.id.text_control);
         btnOn = (Button)findViewById(R.id.btnOn);
         btnOff = (Button)findViewById(R.id.btnOff);
@@ -73,6 +77,7 @@ public class BluetoothActivity extends AppCompatActivity {
         handlerBluetoothIn = new Handler(){
             @Override
             public void handleMessage(Message msg) {
+                Log.d("Read", "Handler");
                 if (msg.what == handlerState) {
                     String readMessage = (String) msg.obj;
                     dataStringInput.append(readMessage);
@@ -92,6 +97,8 @@ public class BluetoothActivity extends AppCompatActivity {
         btnOn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Paper.book().destroy();
+                Paper.book().write("STATE", 1);
                 connectedThread.write("1");
             }
         });
@@ -99,11 +106,25 @@ public class BluetoothActivity extends AppCompatActivity {
         btnOff.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Paper.book().destroy();
+                Paper.book().write("STATE", 0);
                 connectedThread.write("0");
             }
         });
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         checkState();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return false;
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
     }
 
     private BluetoothSocket createConnectionSecure(BluetoothDevice bDevice) throws IOException {

@@ -8,6 +8,7 @@ import android.content.ContextWrapper;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.geekprogrammer.riegoapp.R;
@@ -41,16 +42,20 @@ public class NotificationHelper extends ContextWrapper {
         return manager;
     }
 
-    public Notification.Builder getGeekChannelNotification(String title, String body){
+    public NotificationCompat.Builder getGeekChannelNotification(String title, String body){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return new Notification.Builder(getApplicationContext(), CHANNEL_ID)
+            return new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                     .setContentText(body)
                     .setContentTitle(title)
                     .setSmallIcon(R.drawable.ic_invert_colors_black)
                     .setAutoCancel(true);
         }else{
             Log.d("Null Notification","Is null");
-            return null;
+            return new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_pig)
+                    .setContentTitle(title)
+                    .setContentText(body)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         }
     }
 }

@@ -25,15 +25,18 @@
         <activity android:name=".BluetoothActivity" />
         <activity
             android:name=".DatetimeActivity"
-            android:parentActivityName="com.geekprogrammer.riegoapp.DatetimeActivity">
-
+            android:parentActivityName=".DatetimeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.geekprogrammer.riegoapp.DatetimeActivity" />
         </activity>
 
-        <service android:name=".Services$RiegoAutomatico"/>
-        <receiver android:name=".Services.AutomaticIrrigationReceiver" android:enabled="true" android:exported="true"/>
+        <receiver
+            android:name=".Services.AutomaticIrrigationReceiver"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity android:name=".PairedActivity"></activity>
     </application>
 
 </manifest>

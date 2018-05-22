@@ -19,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
@@ -89,12 +88,19 @@ public class DatetimeActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        startActivity(new Intent(DatetimeActivity.this, MainActivity.class));
+        finish();
+        return false;
+    }
+
     private void addDatetime() {
         datetime = new Datetime();
         loadAlertDialogTime();
     }
 
-    private void timeIrration() {
+    private void timeIrrigation() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Asigna la duracion en minutos")
                 .setMessage("Recuerda racionalizar el agua para evitar perdidas")
@@ -142,7 +148,7 @@ public class DatetimeActivity extends AppCompatActivity {
                 if (date.equalsIgnoreCase(feActual)){
                     Toast.makeText(DatetimeActivity.this, date, Toast.LENGTH_SHORT).show();
                 }
-                timeIrration();
+                timeIrrigation();
             }
         };
         DatePickerDialog datePickerDialog = new DatePickerDialog(DatetimeActivity.this, dsListener,

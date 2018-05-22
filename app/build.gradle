@@ -32,5 +32,7 @@ dependencies {
     //Library Firebase
     implementation 'com.google.firebase:firebase-core:15.0.0'
     implementation 'com.google.firebase:firebase-database:15.0.0'
+    //Paper book
+    implementation 'io.paperdb:paperdb:2.6'
 }
 apply plugin: 'com.google.gms.google-services'

@@ -1,12 +1,13 @@
 <resources>
-    <string name="app_name">Regadera Pig</string>
+    <string name="app_name">Pig Shower App</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Sistema De Riego</string>
+    <string name="nav_header_title">Pig Shower</string>
     <string name="nav_header_subtitle">riegoapp@gmail.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Activar Bluetooth</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="sin_bluetooth_disponible">Sin Bluetooth Disponible</string>
+    <string name="infoText">Pig Shower App le permitira realizar baños a los cerdos de manera automatica y manual, sin necesidad que se pare de su puesto.\nPuede configurar las horas de riego y la duracion del mismo, esto le facilitara el trabajo, de manera que puede realizar otros mientras automaticamente se ejecuta el riego</string>
 </resources>
