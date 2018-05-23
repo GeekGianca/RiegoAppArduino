@@ -8,6 +8,7 @@ import java.util.Map;
 
 @IgnoreExtraProperties
 public class Datetime {
+    private int id;
     private String date;
     private String time;
     private int duration;
@@ -18,6 +19,14 @@ public class Datetime {
     }
 
     public Datetime(String date, String time, int duration, String state) {
+        this.date = date;
+        this.time = time;
+        this.duration = duration;
+        this.state = state;
+    }
+
+    public Datetime(int id, String date, String time, int duration, String state) {
+        this.id = id;
         this.date = date;
         this.time = time;
         this.duration = duration;
@@ -54,6 +63,25 @@ public class Datetime {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "Datetime{" +
+                "id=" + id +
+                ", date='" + date + '\'' +
+                ", time='" + time + '\'' +
+                ", duration=" + duration +
+                ", state='" + state + '\'' +
+                '}';
     }
 
     @Exclude

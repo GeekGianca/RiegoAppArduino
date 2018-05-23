@@ -1,15 +1,9 @@
 package com.geekprogrammer.riegoapp;
 
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,28 +12,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.geekprogrammer.riegoapp.Common.Common;
 import com.geekprogrammer.riegoapp.Helper.DatabaseHelper;
-import com.geekprogrammer.riegoapp.Model.Devices;
-import com.geekprogrammer.riegoapp.Services.ResponseAndRequestHandlerBt;
-import com.geekprogrammer.riegoapp.ViewHolder.DevicesAdapter;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import io.paperdb.Paper;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     Toolbar toolbar;
-    ResponseAndRequestHandlerBt rsrhb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +33,10 @@ public class MainActivity extends AppCompatActivity
         toolbar.setTitle("Pig Shower");
 
         DatabaseHelper db = new DatabaseHelper(this);
+
+        Common.getDevicePaired(this);
         Common.mCurrentDevice = db.getDevice("PigShowerBt");
+
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,12 +58,6 @@ public class MainActivity extends AppCompatActivity
         //checkStatusConnection();
     }
 
-    private void checkStatusConnection(){
-        Paper.init(this);
-        rsrhb = new ResponseAndRequestHandlerBt(this);
-        String state = String.valueOf(Paper.book().read("STATE"));
-        rsrhb.execute(state);
-    }
 
     @Override
     protected void onStop() {

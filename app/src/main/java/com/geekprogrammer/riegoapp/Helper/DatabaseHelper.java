@@ -1,5 +1,6 @@
 package com.geekprogrammer.riegoapp.Helper;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
@@ -39,6 +40,7 @@ public class DatabaseHelper extends SQLiteAssetHelper {
                         c.getString(c.getColumnIndex("status_shower"))));
             }while (c.moveToNext());
         }
+        db.close();
         return result;
     }
 
@@ -51,15 +53,54 @@ public class DatabaseHelper extends SQLiteAssetHelper {
                     dt.getDuration(),
                     dt.getState());
             db.execSQL(query);
+            db.close();
         }catch (Exception e){
             Log.e("Exception Db", e.getMessage());
         }
+    }
+
+    public Datetime getDatetime(String timeStart){
+        SQLiteDatabase db = getReadableDatabase();
+        String[] sqlSelect = {"id_shower", "date_shower", "time_shower", "duration_shower", "status_shower"};
+        Cursor c = db.query("datetime_table", sqlSelect, "time_shower=?", new String[]{timeStart}, null, null, null, null);
+        Datetime datetime = null;
+        try{
+            if (c != null){
+                c.moveToFirst();
+                datetime = new Datetime(c.getInt(0),
+                        c.getString(1),
+                        c.getString(2),
+                        c.getInt(3),
+                        c.getString(4));
+            }
+            db.close();
+            return datetime;
+        }catch (CursorIndexOutOfBoundsException cioobe){
+            Log.e("No table data",cioobe.getMessage());
+            db.close();
+            return datetime;
+        }
+    }
+
+    public int updateDatetime(int id){
+        int rs = -1;
+        try{
+            SQLiteDatabase db = getReadableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("status_shower", "Ejecutado");
+            rs = db.update("datetime_table",values, "id_shower="+id, null);
+            db.close();
+        }catch (Exception e){
+            Log.e("Update Db", e.getMessage());
+        }
+        return rs;
     }
 
     public void cleanDatetime(){
         SQLiteDatabase db = getReadableDatabase();
         String query = String.format("DELETE FROM datetime_table");
         db.execSQL(query);
+        db.close();
     }
 
     public List<Devices> getDevices(){
@@ -77,6 +118,7 @@ public class DatabaseHelper extends SQLiteAssetHelper {
                         c.getInt(c.getColumnIndex("status_device"))));
             }while (c.moveToNext());
         }
+        db.close();
         return result;
     }
 
@@ -89,6 +131,7 @@ public class DatabaseHelper extends SQLiteAssetHelper {
                     d.getDevice_name(),
                     d.getStatus());
             db.execSQL(query);
+            db.close();
         }catch (Exception e){
             Log.e("Exception Db", e.getMessage());
         }
@@ -106,9 +149,11 @@ public class DatabaseHelper extends SQLiteAssetHelper {
                         c.getString(1),
                         c.getInt(2));
             }
+            db.close();
             return devices;
         }catch (CursorIndexOutOfBoundsException cioobe){
             Log.e("No table data",cioobe.getMessage());
+            db.close();
             return devices;
         }
     }
@@ -117,5 +162,6 @@ public class DatabaseHelper extends SQLiteAssetHelper {
         SQLiteDatabase db = getReadableDatabase();
         String query = String.format("DELETE FROM devices_table");
         db.execSQL(query);
+        db.close();
     }
 }

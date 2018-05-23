@@ -53,7 +53,7 @@ public class PairedActivity extends AppCompatActivity {
         Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0){
             for (BluetoothDevice device : pairedDevices){
-                Devices dev = new Devices(device.getName(), device.getAddress(), 0);
+                Devices dev = new Devices(device.getAddress(), device.getName(), 0);
                 dbhelper.addDevices(dev);
                 Log.v("Devices: ", device.getName());
             }
@@ -67,6 +67,7 @@ public class PairedActivity extends AppCompatActivity {
         Log.d("Size List", devices.size()+"");
         if (devices.size() == 0){
             updateListDevices();
+            devices = dbhelper.getDevices();
         }
         adapter = new DevicesAdapter(devices, this);
         adapter.notifyDataSetChanged();
@@ -119,7 +120,7 @@ public class PairedActivity extends AppCompatActivity {
         });
 
         loadListDevices();
-        loadUUIDBt();
+        //loadUUIDBt();
     }
 
     @Override

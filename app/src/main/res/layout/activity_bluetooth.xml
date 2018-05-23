@@ -8,6 +8,7 @@
     tools:context=".BluetoothActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -21,10 +22,21 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <TextView
+        android:layout_below="@+id/appBar"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimary"
+        android:gravity="center"
+        android:id="@+id/text_connection"
+        android:textSize="20sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <RelativeLayout
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
 
         <TextView
             android:gravity="center"

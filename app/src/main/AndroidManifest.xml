@@ -36,7 +36,7 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".PairedActivity"></activity>
+        <activity android:name=".PairedActivity" />
     </application>
 
 </manifest>
