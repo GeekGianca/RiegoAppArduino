@@ -30,7 +30,7 @@ public class DatabaseHelper extends SQLiteAssetHelper {
         String[] sqlSelect = {"id_shower", "date_shower", "time_shower", "duration_shower", "status_shower"};
         String table = "datetime_table";
         qb.setTables(table);
-        Cursor c = qb.query(db, sqlSelect, null, null, null, null, null);
+        Cursor c = qb.query(db, sqlSelect, null, null, null, null, "date_shower, time_shower ASC");
         List<Datetime> result = new ArrayList<>();
         if (c.moveToFirst()){
             do {
@@ -59,10 +59,10 @@ public class DatabaseHelper extends SQLiteAssetHelper {
         }
     }
 
-    public Datetime getDatetime(String timeStart){
+    public Datetime getDatetime(String timeStart, String dateStart){
         SQLiteDatabase db = getReadableDatabase();
         String[] sqlSelect = {"id_shower", "date_shower", "time_shower", "duration_shower", "status_shower"};
-        Cursor c = db.query("datetime_table", sqlSelect, "time_shower=?", new String[]{timeStart}, null, null, null, null);
+        Cursor c = db.query("datetime_table", sqlSelect, "time_shower=? AND date_shower=?", new String[]{timeStart, dateStart}, null, null, "date_shower, time_shower ASC", null);
         Datetime datetime = null;
         try{
             if (c != null){
@@ -82,16 +82,53 @@ public class DatabaseHelper extends SQLiteAssetHelper {
         }
     }
 
-    public int updateDatetime(int id){
+    public Datetime getDatetimeOnUpdateExecute(String dateStart, String status){
+        SQLiteDatabase db = getReadableDatabase();
+        String[] sqlSelect = {"id_shower", "date_shower", "time_shower", "duration_shower", "status_shower"};
+        Cursor c = db.query("datetime_table", sqlSelect, "date_shower=? AND status_shower=?", new String[]{dateStart,status}, null, null, "date_shower, time_shower ASC", null);
+        Datetime datetime = null;
+        try{
+            if (c != null){
+                c.moveToFirst();
+                datetime = new Datetime(c.getInt(0),
+                        c.getString(1),
+                        c.getString(2),
+                        c.getInt(3),
+                        c.getString(4));
+            }
+            db.close();
+            return datetime;
+        }catch (CursorIndexOutOfBoundsException cioobe){
+            Log.e("No table data",cioobe.getMessage());
+            db.close();
+            return datetime;
+        }
+    }
+
+    public int deleteDatetime(int id){
+        int res = -1;
+        try{
+            SQLiteDatabase db = getWritableDatabase();
+            res = db.delete("datetime_table", "id_shower=?", new String[]{String.valueOf(id)});
+            db.close();
+            return res;
+        }catch (Exception e){
+            Log.e("DB DELETE EX", e.getMessage());
+            return res;
+        }
+    }
+
+    public int updateDatetime(int id, String newstate){
         int rs = -1;
         try{
             SQLiteDatabase db = getReadableDatabase();
             ContentValues values = new ContentValues();
-            values.put("status_shower", "Ejecutado");
+            values.put("status_shower", newstate);
             rs = db.update("datetime_table",values, "id_shower="+id, null);
             db.close();
+            Log.d("UPDATE DONE","UPDATE "+id);
         }catch (Exception e){
-            Log.e("Update Db", e.getMessage());
+            Log.e("ExUpdate Db", e.getMessage());
         }
         return rs;
     }

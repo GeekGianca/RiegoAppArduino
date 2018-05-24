@@ -37,6 +37,11 @@
             android:exported="true" />
 
         <activity android:name=".PairedActivity" />
+
+        <service
+            android:name=".Services.IrrigationServiceForeground"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>

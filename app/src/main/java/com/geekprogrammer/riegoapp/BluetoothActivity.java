@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,9 +23,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.geekprogrammer.riegoapp.Helper.DatabaseHelper;
+import com.geekprogrammer.riegoapp.Helper.NotificationHelper;
 import com.geekprogrammer.riegoapp.Threads.BluetoothThreadConnection;
 
 import java.io.IOException;
+import java.util.Random;
 import java.util.UUID;
 
 import io.paperdb.Paper;
@@ -54,7 +57,7 @@ public class BluetoothActivity extends AppCompatActivity {
 
     private static final int REQUEST_ENABLE_BT = 1;
 
-    private int durationTask = -1;
+    private int idBt = -1;
 
     @SuppressLint("HandlerLeak")
     @Override
@@ -215,23 +218,23 @@ public class BluetoothActivity extends AppCompatActivity {
         if (getIntent().getStringExtra("statusBt") != null &&
                 getIntent().getStringExtra("timeBt") != null &&
                 getIntent().getStringExtra("idBt") != null){
-            int idBt = Integer.parseInt(getIntent().getStringExtra("idBt"));
+            idBt = Integer.parseInt(getIntent().getStringExtra("idBt"));
             String statusBt = getIntent().getStringExtra("statusBt");
-            durationTask = Integer.parseInt(getIntent().getStringExtra("timeBt"))*60;
+            int durationTask = Integer.parseInt(getIntent().getStringExtra("timeBt"))*60;
             Log.e("OnReceived", "Get Data "+statusBt+" - "+durationTask+" - "+idBt);
-            activeIrrigationTime(statusBt);
-            DatabaseHelper dbHelper = new DatabaseHelper(this);
-            dbHelper.updateDatetime(idBt);
+            activeIrrigationTime(statusBt, durationTask);
+
         }else{
             Log.d("No Service","Task not exist");
         }
     }
 
-    private void activeIrrigationTime(String statusBt) {
+    private void activeIrrigationTime(String statusBt, int durationTask) {
         pDialog = new ProgressDialog(this);
         pDialog.setTitle("Ejecutando riego automatico");
         pDialog.setIcon(R.drawable.ic_pig);
         pDialog.setCanceledOnTouchOutside(false);
+        pDialog.setCancelable(false);
         pDialog.show();
         connectedThread.write(statusBt);
         new ExecuteIrrigationDuration().execute(durationTask);
@@ -279,7 +282,13 @@ public class BluetoothActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            NotificationHelper helper = new NotificationHelper(BluetoothActivity.this);
+            NotificationCompat.Builder builder = helper.getGeekChannelNotification("PigShower App", "El riego automatico ha finalizado");
+            helper.getManager().notify(new Random().nextInt(), builder.build());
             connectedThread.write(s);
+            //Update database
+            DatabaseHelper dbHelper = new DatabaseHelper(BluetoothActivity.this);
+            dbHelper.updateDatetime(idBt, "Ejecutada");
         }
     }
 }

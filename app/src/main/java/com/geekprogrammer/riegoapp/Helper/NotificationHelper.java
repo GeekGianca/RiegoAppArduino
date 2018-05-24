@@ -47,7 +47,8 @@ public class NotificationHelper extends ContextWrapper {
             return new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                     .setContentText(body)
                     .setContentTitle(title)
-                    .setSmallIcon(R.drawable.ic_invert_colors_black)
+                    .setSmallIcon(R.drawable.ic_pig)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setAutoCancel(true);
         }else{
             Log.d("Null Notification","Is null");

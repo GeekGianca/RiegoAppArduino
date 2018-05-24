@@ -36,7 +36,8 @@ public class AutomaticIrrigationReceiver extends BroadcastReceiver {
         try{
             Log.d("Start", "Receiver");
             String timeStart = intent.getStringExtra("timeStart");
-            datetime = db.getDatetime(timeStart);
+            String dateStart = intent.getStringExtra("dateStart");
+            datetime = db.getDatetime(timeStart, dateStart);
             Log.e("Datetime", datetime.toString());
             MediaPlayer mediaPlayer = MediaPlayer.create(context,
                     Settings.System.DEFAULT_RINGTONE_URI);

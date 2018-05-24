@@ -4,10 +4,13 @@ import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,6 +27,7 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.geekprogrammer.riegoapp.Common.Common;
 import com.geekprogrammer.riegoapp.Helper.DatabaseHelper;
 import com.geekprogrammer.riegoapp.Model.Datetime;
 import com.geekprogrammer.riegoapp.Services.AutomaticIrrigationReceiver;
@@ -40,6 +44,7 @@ public class DatetimeActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     RecyclerView.LayoutManager lManager;
+    SwipeRefreshLayout swipeRefreshLayout;
     List<Datetime> listDatetime = new ArrayList<>();
     DatetimeAdapter adapter;
     Datetime datetime;
@@ -51,6 +56,7 @@ public class DatetimeActivity extends AppCompatActivity {
     Date fActual = new Date();
     SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
     String feActual = "";
+    ProgressDialog pDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +70,13 @@ public class DatetimeActivity extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
+        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadDatetimes();
+            }
+        });
 
         dbHelper = new DatabaseHelper(this);
 
@@ -75,7 +88,7 @@ public class DatetimeActivity extends AppCompatActivity {
         cCurrentTime = Calendar.getInstance();
         //Add to firebase
         feActual = dateFormat.format(fActual);
-        Log.d("Format Date", feActual);
+        Log.e("Format Date", feActual);
         loadDatetimes();
     }
 
@@ -85,6 +98,7 @@ public class DatetimeActivity extends AppCompatActivity {
         adapter = new DatetimeAdapter(listDatetime, this);
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -112,6 +126,26 @@ public class DatetimeActivity extends AppCompatActivity {
     private void addDatetime() {
         datetime = new Datetime();
         loadAlertDialogTime();
+    }
+
+    private void loadAlertDialogTime() {
+        int hourCurrent = cCurrentTime.get(Calendar.HOUR_OF_DAY);
+        int minuteCurrent = cCurrentTime.get(Calendar.MINUTE);
+        final TimePickerDialog timePickerDialog = new TimePickerDialog(DatetimeActivity.this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                cCurrentTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                cCurrentTime.set(Calendar.MINUTE, minute);
+                cCurrentTime.set(Calendar.SECOND, 0);
+                datetime.setTime(DateFormat.getTimeInstance(DateFormat.SHORT).format(cCurrentTime.getTime()));
+                Log.d("TIME", DateFormat.getTimeInstance(DateFormat.SHORT).format(cCurrentTime.getTime()));
+                Log.d("TIME-TIME", ""+hourOfDay+":"+minute);
+                loadAlertDialogDate();
+                Toast.makeText(DatetimeActivity.this, hourOfDay+":"+minute, Toast.LENGTH_SHORT).show();
+            }
+        },hourCurrent, minuteCurrent, true);
+        timePickerDialog.setTitle("¿Hora de Regado?");
+        timePickerDialog.show();
     }
 
     private void timeIrrigation() {
@@ -173,52 +207,91 @@ public class DatetimeActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    private void loadAlertDialogTime() {
-        int hourCurrent = cCurrentTime.get(Calendar.HOUR_OF_DAY);
-        int minuteCurrent = cCurrentTime.get(Calendar.MINUTE);
-        final TimePickerDialog timePickerDialog = new TimePickerDialog(DatetimeActivity.this, new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                String time = "";
-                if (minute < 10){
-                    String minuts = String.format("0%s",minute);
-                    time = String.valueOf(hourOfDay+":"+minuts);
-                }else{
-                    time = String.valueOf(hourOfDay+":"+minute);
-                }
-                Log.d("TIME", DateFormat.getTimeInstance(DateFormat.SHORT).format(cCurrentTime.getTime()));
-                datetime.setTime(time);
-                Log.d("Datetime Current", hourOfDay+":"+minute+":"+0);
-                /*cCurrentTime.set(
-                        cCurrentTime.get(Calendar.YEAR),
-                        cCurrentTime.get(Calendar.MONTH),
-                        cCurrentTime.get(Calendar.DAY_OF_MONTH),
-                        hourOfDay,
-                        minute,
-                        0
-                );*/
-                cCurrentTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                cCurrentTime.set(Calendar.MINUTE, minute);
-                cCurrentTime.set(Calendar.SECOND, 0);
-                loadAlertDialogDate();
-                Toast.makeText(DatetimeActivity.this, hourOfDay+":"+minute, Toast.LENGTH_SHORT).show();
-            }
-        },hourCurrent, minuteCurrent, true);
-        timePickerDialog.setTitle("¿Hora de Regado?");
-        timePickerDialog.show();
+    private void loadListDatetime() {
+        //CONFIGURE DESIGN PATTERN
+        if (datetime.getDate().equals(Common.currentDate())){
+            AlarmManager manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+            Intent intent = new Intent(this, AutomaticIrrigationReceiver.class);
+            intent.putExtra("timeStart", datetime.getTime());
+            intent.putExtra("dateStart", datetime.getDate());
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+            /*if (cCurrentTime.before(Calendar.getInstance())){
+                cCurrentTime.add(Calendar.DATE, 1);
+            }*/
+            manager.setExact(AlarmManager.RTC_WAKEUP, cCurrentTime.getTimeInMillis(), pendingIntent);
+            dbHelper.addDatetime(datetime);
+            Toast.makeText(this, "Riego automatico configurado", Toast.LENGTH_LONG).show();
+        }else{
+            pDialog = new ProgressDialog(this);
+            pDialog.setMessage("Espere...");
+            pDialog.setCanceledOnTouchOutside(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+            new CheckDays().execute();
+        }
+        loadDatetimes();
     }
 
-    private void loadListDatetime() {
-        dbHelper.addDatetime(datetime);
-        loadDatetimes();
-        AlarmManager manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, AutomaticIrrigationReceiver.class);
-        intent.putExtra("timeStart", datetime.getTime());
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
-        if (cCurrentTime.before(Calendar.getInstance())){
-            cCurrentTime.add(Calendar.DATE, 1);
+    private class CheckDays extends AsyncTask<Integer, Integer, String> {
+
+        @Override
+        protected String doInBackground(Integer... integers) {
+            try {
+
+                int counterDays = -1;
+
+                while (true) {
+                    Thread.sleep(50);
+                    Calendar temp = Calendar.getInstance();
+                    temp.add(Calendar.DAY_OF_YEAR, counterDays);
+                    Log.e("Dates", datetime.getDate() + " CompareTo " + dateFormat.format(temp.getTime())+" Days "+counterDays);
+                    if (datetime.getDate().equals(dateFormat.format(temp.getTime()))) {
+                        return "Esta fecha ya paso, no se agrego a la lista";
+                    }
+                    if (counterDays == -360) {
+                        break;
+                    }
+                    publishProgress(counterDays);
+                    counterDays--;
+                }
+
+                counterDays = 1;
+
+                while (true) {
+                    Thread.sleep(50);
+                    Calendar temp = Calendar.getInstance();
+                    temp.add(Calendar.DAY_OF_YEAR, counterDays);
+                    Log.e("Dates", datetime.getDate() + " CompareTo " + dateFormat.format(temp.getTime())+" Days "+counterDays);
+                    if (datetime.getDate().equals(dateFormat.format(temp.getTime()))) {
+                        datetime.setState("Programada");
+                        dbHelper.addDatetime(datetime);
+                        return "Se agrego una nueva fecha de riego en " + counterDays + " dias";
+                    }
+                    if (counterDays == 360) {
+                        break;
+                    }
+                    counterDays++;
+                }
+            }catch (InterruptedException e){
+                Log.e("IntEx", e.getMessage());
+            }
+            return "";
         }
-        manager.setExact(AlarmManager.RTC_WAKEUP, cCurrentTime.getTimeInMillis(), pendingIntent);
-        Toast.makeText(this, "Riego automatico configurado", Toast.LENGTH_SHORT).show();
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            int value = values[0];
+            String mssg = value % 3 == 0 ? "Verificando calendario" : "Cargando";
+            pDialog.setMessage(mssg);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Toast.makeText(DatetimeActivity.this, s, Toast.LENGTH_SHORT).show();
+            pDialog.dismiss();
+            loadDatetimes();
+        }
     }
 }
