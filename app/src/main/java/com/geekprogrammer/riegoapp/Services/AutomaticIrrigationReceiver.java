@@ -63,26 +63,6 @@ public class AutomaticIrrigationReceiver extends BroadcastReceiver {
         }
     }
 
-    /*public String getMacAddressDevice() {
-        String macAddressDevice = null;
-        try{
-            Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-            if (pairedDevices.size() > 0){
-                for (BluetoothDevice device : pairedDevices){
-                    if (device.getName().equals("PigShowerBt")){
-                        macAddressDevice = device.getAddress();
-                    }
-                    Log.v("Devices: ", device.getName());
-                }
-            }
-        }catch (Exception e){
-            Log.e("Exception Task", e.getMessage());
-            Toast.makeText(this.context, "Error "+e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-        bluetoothAdapter.cancelDiscovery();
-        return macAddressDevice;
-    }*/
-
     @Override
     protected void finalize() throws Throwable {
         super.finalize();

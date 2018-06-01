@@ -207,8 +207,6 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_dispositivos) {
             startActivity(new Intent(MainActivity.this, PairedActivity.class));
             finish();
-        } else if (id == R.id.nav_configuracion) {
-
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

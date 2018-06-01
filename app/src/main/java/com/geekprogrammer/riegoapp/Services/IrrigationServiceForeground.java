@@ -12,8 +12,6 @@ import com.geekprogrammer.riegoapp.Helper.NotificationHelper;
 
 public class IrrigationServiceForeground extends Service {
 
-    private NotificationHelper nHelper;
-
     public IrrigationServiceForeground() {
     }
 
