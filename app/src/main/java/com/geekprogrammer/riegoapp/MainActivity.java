@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity
         Log.e("Current Date", Common.currentDate());
         Log.e("Date before today", Common.beforeDate(-1));
         Datetime dt = db.getDatetime("7:07 AM", "05/25/2018");
-        String dte = dt != null ? dt.toString() : "null" ;
+        String dte = dt != null ? dt.toString() : "null";
         Log.e("Get Database", dte);
         updateDateAndTimes();
         service = new Intent(this, IrrigationServiceForeground.class);
@@ -93,12 +93,12 @@ public class MainActivity extends AppCompatActivity
                 calendar.set(Calendar.MINUTE, date.getMinutes());
                 calendar.set(Calendar.SECOND, date.getSeconds());
                 Log.d("GET FORMAT DATE", DateFormat.getTimeInstance(DateFormat.SHORT).format(date));
-                Log.d("HORA",String.valueOf(date.getHours()));
+                Log.d("HORA", String.valueOf(date.getHours()));
                 Log.d("MINUTOS", String.valueOf(date.getMinutes()));
                 Log.d("SEGUNDOS", String.valueOf(date.getSeconds()));
 
                 //
-                AlarmManager manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+                AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 Intent intent = new Intent(this, AutomaticIrrigationReceiver.class);
                 intent.putExtra("timeStart", dt.getTime());
                 intent.putExtra("dateStart", dt.getDate());
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity
                 manager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
                 Toast.makeText(this, "Se agrego una fecha pendiente al riego automatico", Toast.LENGTH_LONG).show();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e("OnResume", e.getMessage());
         }
     }
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity
                 .setMessage(messg)
                 .setIcon(icon)
                 .setCancelable(false);
-        if (calendar != null){
+        if (calendar != null) {
             mBuilder.setPositiveButton("Activar", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity
                     db.deleteDatetime(datetime.getId());
                 }
             });
-        }else{
+        } else {
             mBuilder.setNegativeButton("Eliminar", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         //if (id == R.id.on_bluetooth) {
-            //checkState();
+        //checkState();
         //    return true;
         //}
 
@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_regados) {
-            try{
+            try {
                 mDialog = new ProgressDialog(this);
                 mDialog.setTitle("Espere...");
                 mDialog.setMessage("Verificando estado del bluetooth");
@@ -197,9 +197,18 @@ public class MainActivity extends AppCompatActivity
                 btA.putExtra("devices_address", Common.mCurrentDevice.getDevice_uid());
                 startActivity(btA);
                 finish();
-            }catch (NullPointerException npe){
+            } catch (NullPointerException npe) {
+                mDialog.dismiss();
                 Log.e("NullPE No Mac", npe.getMessage());
-                Toast.makeText(this, "No hay MAC vinculada al Bluetooth", Toast.LENGTH_SHORT).show();
+                new AlertDialog.Builder(this)
+                        .setTitle("Sin Conexion")
+                        .setMessage("Se ha perdido la conexion del Bluetooth, o no existe una conexion activa.\n" + npe.getMessage())
+                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).show();
             }
         } else if (id == R.id.nav_fechas_riego) {
             startActivity(new Intent(MainActivity.this, DatetimeActivity.class));
@@ -208,7 +217,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(MainActivity.this, PairedActivity.class));
             finish();
         }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -216,9 +225,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        try{
+        try {
             //mDialog.dismiss();
-        }catch (NullPointerException npe){
+        } catch (NullPointerException npe) {
             Log.e("NullPointerEx", npe.getMessage());
         }
     }
